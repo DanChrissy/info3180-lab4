@@ -31,7 +31,6 @@ def about():
 def upload():
     if not session.get('logged_in'):
         abort(401)
-
     # Instantiate your form class
     uploadPhoto = UploadForm()
 
@@ -39,12 +38,12 @@ def upload():
     if request.method == 'POST':
         # Get file data and save to your uploads folder
         if uploadPhoto.validate_on_submit():
-            pic = uploadPhoto.pic.data
+            pic = request.files['picture']
             filename = secure_filename(pic.filename)
             pic.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
         flash('File Saved', 'success')
         return redirect(url_for('home'))
-    return render_template('upload.html')
+    return render_template('upload.html', form = uploadPhoto)
 
 
 @app.route('/login', methods=['POST', 'GET'])
