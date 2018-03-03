@@ -45,7 +45,12 @@ def upload():
         return redirect(url_for('home'))
     return render_template('upload.html', form = uploadPhoto)
 
-
+@app.route('/files')
+def files():
+    if not session.get('logged_in'):
+        abort(401)
+    return render_template('files.html')
+    
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     error = None
