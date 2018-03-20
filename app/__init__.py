@@ -1,14 +1,22 @@
 from flask import Flask
-
-# Config Values
-USERNAME = 'admin'
-PASSWORD = 'password123'
-
-UPLOAD_FOLDER = './app/static/uploads'
-
-# SECRET_KEY is needed for session security, the flash() method in this case stores the message in a session
-SECRET_KEY = 'Sup3r$3cretkey'
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = "this is a super secure key"  # you should make this more random and unique
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://project1:project1@localhost/project1"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True  # added just to suppress a warning
+
+db = SQLAlchemy(app)
+UPLOAD_FOLDER = './app/static/uploads'
+
+SECRET_KEY = 'Sup3r$3cretkey'
+
+# Flask-Login login manager
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'  # necessary to tell Flask-Login what the default route is for the login page
+login_manager.login_message_category = "info"  # customize the flash message category
+
 app.config.from_object(__name__)
 from app import views
