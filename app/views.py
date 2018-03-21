@@ -64,9 +64,24 @@ def logout():
     flash('You were logged out', 'success')
     return redirect(url_for('home'))
 
+@app.route('/files')
+def files():
+    if not session.get('logged_in'):
+        abort(401)
+    Pictures=get_uploaded_images()
+    return render_template('files.html',pics=Pictures)
+
 ###
 # The functions below should be applicable to all Flask apps.
 ###
+
+def get_uploaded_images():
+    pics = []
+    rootdir = os.getcwd()
+    for files in os.walk(rootdir + '/app/static/uploads'):     
+        for file in files:
+            pics.append(os.path.join(file))
+    return(pics[2][1:])
 
 # Flash errors from the form if validation fails
 def flash_errors(form):

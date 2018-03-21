@@ -1,41 +1,14 @@
 body {
     padding-top: 5rem;
-    background-color: #cce7ff;
 }
 
-#bottom-form{
-    background-color: white;
-    border-top: 3px solid #007ae6;
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, .2fr);
+  grid-auto-rows: 200px;
 }
 
-#top-form, #bottom-form{
-    margin-left: 10px;
-}
-
-#title{
-    font-size: 3em;
-    font-weight: bold;
-}
-.fields{
-    display: inline;
-    font-weight: bold;
-}
-
-.field-area, .fields{
-    margin-left: 3em;
-}
-
-.field-area{
-    border-radius: 10px;
-    width: 15em;
-}
-
-button{
-    background-color: #00e600;
-    border: 1px solid #00e600;
-    margin: 3px;
-    color:white;
-    border-radius: 10px;
-    margin-left: 3em;
-    margin-bottom: 10px;
+img{
+    height: 144px;
+    width: 144px;
 }
