@@ -1,15 +1,9 @@
-"""
-Flask Documentation:     http://flask.pocoo.org/docs/
-Jinja2 Documentation:    http://jinja.pocoo.org/2/documentation/
-Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
-This file creates your application.
-"""
 import os
 from app import app
-from forms import ProfileForm
 from flask import render_template, request, redirect, url_for, flash, session, abort
 from werkzeug.utils import secure_filename
-
+from forms import UploadForm
+rootdir = os.getcwd()
 
 ###
 # Routing for your application.
@@ -24,57 +18,52 @@ def home():
 @app.route('/about/')
 def about():
     """Render the website's about page."""
-    return render_template('about.html')
+    return render_template('about.html', name="Mary Jane")
 
 
-'''@app.route('/profile', methods=['POST', 'GET'])
-def profile():
-    profileForm = ProfileForm()
+@app.route('/upload', methods=['POST', 'GET'])
+def upload():
+    if not session.get('logged_in'):
+        abort(401)
 
-    # Validate file upload on submit
-    if request.method == 'POST':
-        # Get file data and save to your uploads folder
-        if profileForm.validate_on_submit():
-            """first = profileForm.firstname.data
-            last = profileForm.lastname.data
-            gender = profileForm.gender.data
-            email = profileForm.email.data
-            location = profileForm.location.data
-            bio = profileForm.biography.data"""
-            
-            pic = request.files['photo']
-            filename = secure_filename(pic.filename)
-            pic.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
-            
-        flash('File saved', 'success')
-        return redirect(url_for('home'))
-    return render_template('profile.html', form = profileForm)'''
-    
-@app.route('/profile', methods=['POST', 'GET'])
-def profile():
-    profileForm = ProfileForm()
+    # Instantiate your form class
+    form = UploadForm()
 
     # Validate file upload on submit
     if request.method == 'POST':
+        if form.validate_on_submit():
         # Get file data and save to your uploads folder
-        if profileForm.validate_on_submit():
-            pic = request.files['photo']
-            filename = secure_filename(pic.filename)
-            pic.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+            photo = request.files['photo']
+            filename = secure_filename(photo.filename)
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            
         flash('File Saved', 'success')
         return redirect(url_for('home'))
-    return render_template('profile.html', form = profileForm)
+        
+    flash_errors(form)
+    return render_template('upload.html', form=form)
 
-@app.route('/profiles')
-def profiles():
-    """Render the website's about page."""
-    return render_template('profiles.html')
 
-@app.route('/profiles/<userId>')
-def userProfile():
-    """Render the website's about page."""
-    return render_template('userProfile.html')
-    
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != app.config['USERNAME'] or request.form['password'] != app.config['PASSWORD']:
+            error = 'Invalid username or password'
+        else:
+            session['logged_in'] = True
+            
+            flash('You were logged in', 'success')
+            return redirect(url_for('upload'))
+    return render_template('login.html', error=error)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out', 'success')
+    return redirect(url_for('home'))
+
 ###
 # The functions below should be applicable to all Flask apps.
 ###
